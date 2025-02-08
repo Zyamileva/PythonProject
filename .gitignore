@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Виртуальное окружение
+venv/
+env/
+
+
+# Конфигурация и логи
+*.log
+*.ini
+*.json
+*.toml
+
+# IDE
+.vscode/
+.idea/
+
+# Pipenv и Poetry
+Pipfile.lock
+poetry.lock
+
+# Базы данных и переменные окружения
+*.sqlite3
+.env
+*.env
