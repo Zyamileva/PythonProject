@@ -14,5 +14,6 @@ def divide(a: int, b: int) -> float:
         raise ZeroDivisionError("Division by zero is impossible")
     return a / b
 
+
 if __name__ == "__main__":
-    print(divide(5,1))
+    print(divide(5, 1))
