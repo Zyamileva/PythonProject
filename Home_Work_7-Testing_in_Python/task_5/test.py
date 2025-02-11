@@ -18,8 +18,7 @@ def test_divide_success():
 
 
 def test_divide_by_zero():
-    """Tests the divide function with parametrized inputs.
-    """
+    """Tests the divide function with parametrized inputs."""
     with pytest.raises(ZeroDivisionError, match="Division by zero is impossible"):
         divide(7, 0)
 
