@@ -1,9 +1,16 @@
 import re
 
 
-def is_valid_password(password):
-    """Checks if a given string is a valid password.
-    This function uses a regular expression to validate the format of a password, checking for at least one uppercase letter, one lowercase letter, one digit, one special character, and a minimum length of 8 characters.
+def is_valid_password(password) -> bool:
+    """Checks if a given password meets certain criteria.
+
+    This function uses a regular expression to validate the strength of a password.
+
+    Args:
+        password: The password string to be validated.
+
+    Returns:
+        True if the password meets the criteria, False otherwise.
     """
     return bool(
         re.match(r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@#$%^&*!?]).{8,}$", password)

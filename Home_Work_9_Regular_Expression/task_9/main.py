@@ -3,20 +3,27 @@ from collections import Counter
 from Home_Work_9_Regular_Expression.task_7 import ip
 
 
-def ip_from_log():
+def ip_from_log(file_name_for_search: str) -> Counter[str]:
     """Counts the occurrences of IP addresses in a log file.
-    Opens the specified log file, reads each line, extracts IP addresses
-    using a regular expression, and counts the occurrences of each unique IP.
+
+    This function reads a log file, extracts IP addresses from each line, and counts the frequency of each unique IP address.
+
+    Args:
+        file_name_for_search: The path to the log file.
+
+    Returns:
+        A Counter object where keys are IP addresses and values are their counts.
     """
 
-    with open(file_name, "r", encoding="utf-8") as file:
+    with open(file_name_for_search, "r", encoding="utf-8") as file:
         ip_counter = Counter()
         for line in file:
-            if ip_count := ip(line):
-                ip_counter[ip_count[0]] += 1
+            if ip_list := ip(line):
+                for ip_addr in ip_list:
+                    ip_counter[ip_addr] += 1
     return ip_counter
 
 
 file_name = "file.log"
-for find_ip, count in ip_from_log().most_common(10):
+for find_ip, count in ip_from_log(file_name).most_common(10):
     print(f"{find_ip}: {count} request")

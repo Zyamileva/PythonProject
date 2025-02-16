@@ -2,9 +2,16 @@ import pprint
 import re
 
 
-def ip(text: str):
-    """Extracts valid IPv4 addresses from a given string.
-    This function searches for patterns matching IPv4 addresses and validates each octet to be within the range of 0 to 255.
+def ip(text: str) -> list[int] | None:
+    """Finds and validates IPv4 addresses in a given text.
+
+    This function searches for strings that resemble IPv4 addresses and then validates each found string to ensure it conforms to the IPv4 address format.
+
+    Args:
+        text: The input string to search for IPv4 addresses.
+
+    Returns:
+        A list of valid IPv4 addresses found in the input text, or None if no valid addresses are found.
     """
     ip_pattern = re.compile(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}")
     list_ip = ip_pattern.findall(text)

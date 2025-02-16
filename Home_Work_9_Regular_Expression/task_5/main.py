@@ -2,8 +2,15 @@ import re
 
 
 def delete_html_tags(text_tags: str) -> str:
-    """Reformats dates from DD/MM/YYYY to YYYY-MM-DD format.
-    This function uses a regular expression to find and replace dates in the input string.
+    """Removes HTML tags from a given string.
+
+    This function uses a regular expression to find and remove all HTML tags in the input string.
+
+    Args:
+        text_tags: The input string containing HTML tags.
+
+    Returns:
+        The input string with all HTML tags removed.
     """
     return re.sub(r"<.*?>", "", text_tags)
 
