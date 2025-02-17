@@ -2,6 +2,21 @@ import sqlite3
 
 
 def add_movies() -> None:
+    """Add a new movie to the database.
+
+    Prompts the user for the movie title, release year, and genre,
+    then adds the movie to the database. After adding the movie,
+    prompts the user to add actors to the movie.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    Raises:
+        sqlite3.IntegrityError: If the movie cannot be added to the database.
+    """
     while True:
         title = input("Введите название фильма:")
         if title == "":
@@ -27,12 +42,24 @@ def add_movies() -> None:
         with sqlite3.connect("my_database.db") as conn:
             film_id = extracted_from_add_movies(conn, title, release_year, genre)
             add_actors_to_movie(film_id)
-        conn.close()
     except sqlite3.IntegrityError as e:
         print(f"Ошибка при добавлении фильма: {e}")
 
 
 def extracted_from_add_movies(conn, title, release_year, genre) -> int:
+    """Insert a new movie into the database.
+
+    Inserts a new movie into the movies table with the given title, release year, and genre.
+
+    Args:
+        conn: The database connection.
+        title: The title of the movie.
+        release_year: The release year of the movie.
+        genre: The genre of the movie.
+
+    Returns:
+        The ID of the newly inserted movie.
+    """
     cursor = conn.cursor()
     cursor.execute(
         """ INSERT INTO movies (title, release_year, genre)
@@ -46,6 +73,19 @@ def extracted_from_add_movies(conn, title, release_year, genre) -> int:
 
 
 def add_actors():
+    """Add a new actor to the database.
+
+    Prompts the user for the actor's name and birth year, then adds the actor to the database.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    Raises:
+        sqlite3.IntegrityError: If the actor cannot be added to the database.
+    """
     while True:
         name = input("Введите имя актера:")
         if name == "":
@@ -74,12 +114,25 @@ def add_actors():
 
             conn.commit()
             print("Актер успешно добавлен!")
-        conn.close()
     except sqlite3.IntegrityError as e:
         print(f"Ошибка при добавлении актера: {e}")
 
 
 def add_actors_to_movie(film_id: int) -> None:
+    """Add actors to a movie.
+
+    Prompts the user for actor names and adds them to the movie's cast in the database.
+    The function checks if the actor exists in the database and if they are already in the movie's cast.
+
+    Args:
+        film_id: The ID of the movie.
+
+    Returns:
+        None
+
+    Raises:
+        sqlite3.IntegrityError: If there is an issue adding the actor to the movie cast.
+    """
     try:
         with sqlite3.connect("my_database.db") as conn:
             cursor = conn.cursor()
@@ -109,12 +162,23 @@ def add_actors_to_movie(film_id: int) -> None:
                     print("Актер уже добавлен к этому фильму!")
                 else:
                     add_actor_to_movie_inner(conn, film_id, actor_id)
-        conn.close()
     except sqlite3.IntegrityError as e:
         print(f"Ошибка при добавлении актера к фильму: {e}")
 
 
 def add_actor_to_movie_inner(conn, film_id, actor_id) -> None:
+    """Add an actor to a movie's cast.
+
+    Inserts a new record into the movie_cast table, linking an actor to a movie.
+
+    Args:
+        conn: The database connection.
+        film_id: The ID of the movie.
+        actor_id: The ID of the actor.
+
+    Returns:
+        None
+    """
     cursor = conn.cursor()
     cursor.execute(
         """
