@@ -1,4 +1,4 @@
-from cassandra.cluster import Cluster
+from cassandra.cluster import Cluster, ResultSet
 
 from datetime import datetime, timedelta, timezone
 
@@ -19,7 +19,17 @@ session.execute("""
 """)
 
 
-def add_event(event_id, user_id, event_type, metadata):
+def add_event(event_id:str, user_id:str, event_type:str, metadata:str)->None:
+    """Add an event to the logs table.
+
+    This function inserts a new event record into the Cassandra "logs" table with the provided event details and a UTC timestamp.
+
+    Args:
+        event_id: The unique identifier for the event.
+        user_id: The ID of the user associated with the event.
+        event_type: The type of the event.
+        metadata: Additional information about the event.
+    """
     timestamp = datetime.now(timezone.utc)
     print(f"adding event {event_id}, {user_id} {event_type} {metadata}")
     session.execute(
@@ -31,7 +41,18 @@ def add_event(event_id, user_id, event_type, metadata):
     )
 
 
-def get_recent_events(event_type, user_id):
+def get_recent_events(event_type:str, user_id:str)->ResultSet:
+    """Retrieve recent events of a specific type for a user.
+
+    This function queries the Cassandra "logs" table for events matching the given type and user ID that occurred within the last 24 hours.
+
+    Args:
+        event_type: The type of event to retrieve.
+        user_id: The ID of the user whose events are to be retrieved.
+
+    Returns:
+        cassandra.cluster.ResultSet: A result set containing the matching events.
+    """
     since = datetime.now(timezone.utc) - timedelta(days=1)
     return session.execute(
         """
@@ -41,7 +62,18 @@ def get_recent_events(event_type, user_id):
     )
 
 
-def update_event_metadata(event_type, user_id, event_id, timestamp, metadata):
+def update_event_metadata(event_type:str, user_id:str, event_id:str, timestamp:timezone, metadata:str)->None:
+    """Update the metadata of a specific event in the logs table.
+
+    This function updates the metadata of an existing event in the Cassandra "logs" table based on the provided event type, user ID, event ID, and timestamp.
+
+    Args:
+        event_type (str): The type of the event.
+        user_id (str): The ID of the user associated with the event.
+        event_id (str): The unique identifier for the event.
+        timestamp (timezone): The timestamp of the event.
+        metadata (str): The new metadata for the event.
+    """
     session.execute(
         """
         UPDATE logs SET metadata=%s WHERE event_type=%s AND user_id=%s AND event_id=%s AND timestamp=%s
@@ -50,10 +82,16 @@ def update_event_metadata(event_type, user_id, event_id, timestamp, metadata):
     )
 
 
-def delete_old_events(event_type):
+def delete_old_events(event_type:str)->None:
+    """Delete events older than 7 days for a given event type.
+
+    This function removes events from the Cassandra "logs" table that are older than a week for a specified event type.  It retrieves the events to be deleted and then deletes them individually to avoid performance issues with large IN queries.
+
+    Args:
+        event_type (str): The type of event to delete old entries for.
+    """
     cutoff = datetime.now(timezone.utc) - timedelta(days=7)
 
-    # Получаем старые события
     rows = session.execute(
         """
         SELECT event_id, user_id, timestamp FROM logs WHERE event_type=%s AND timestamp < %s ALLOW FILTERING
@@ -61,7 +99,6 @@ def delete_old_events(event_type):
         (event_type, cutoff),
     )
 
-    # Удаляем по event_id
     for row in rows:
         session.execute(
             """
@@ -72,6 +109,10 @@ def delete_old_events(event_type):
 
 
 def delete_all_data():
+    """Delete the "logs" table.
+
+    This function drops the "logs" table from the Cassandra database if it exists.
+    """
     session.execute("DROP TABLE IF EXISTS logs")
     print("Таблица logs удалена!")
 

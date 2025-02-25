@@ -8,11 +8,11 @@ collection_products = db["products"]
 collection_orders = db["orders"]
 
 products_list = [
-    {"name": "кроссовки", "price": 1000, "category ": "Adidas", "quantity": 1},
-    {"name": "ботинки", "price": 1500, "category ": "Nike", "quantity": 20},
-    {"name": "пальто", "price": 2000, "category ": "Levis", "quantity": 15},
-    {"name": "куртка", "price": 3000, "category ": "Zara", "quantity": 25},
-    {"name": "штаны", "price": 500, "category ": "H&M", "quantity": 40},
+    {"name": "кроссовки", "price": 1000, "category": "Adidas", "quantity": 1},
+    {"name": "ботинки", "price": 1500, "category": "Nike", "quantity": 20},
+    {"name": "пальто", "price": 2000, "category": "Levis", "quantity": 15},
+    {"name": "куртка", "price": 3000, "category": "Zara", "quantity": 25},
+    {"name": "штаны", "price": 500, "category": "H&M", "quantity": 40},
 ]
 
 orders_list = [
@@ -54,6 +54,16 @@ for product in collection_products.find():
 
 
 def calculate_items_sold_in_n_days(n: int) -> list:
+    """Calculate the total quantity of each item sold in the last n days.
+
+    This function queries a MongoDB collection of orders to determine the total quantity of each item sold within the specified number of days.
+
+    Args:
+        n (int): The number of days to look back from the current date.
+
+    Returns:
+        list: A list of dictionaries, where each dictionary represents
+        an item and its total quantity sold. Each dictionary has the keys "_id" (item name) and "total" (quantity sold)."""
     days_ago = datetime.now() - timedelta(days=n)
     last_days_orders = [
         {"$match": {"date": {"$gte": days_ago}}},
@@ -64,6 +74,16 @@ def calculate_items_sold_in_n_days(n: int) -> list:
 
 
 def calculate_sum_all_orders_customer(name: str) -> float:
+    """Calculate the total sum of all orders for a given customer.
+
+    This function queries a MongoDB collection of orders and calculates the sum of the 'total' field for all orders matching a specific customer name.
+
+    Args:
+        name (str): The name of the customer.
+
+    Returns:
+        float: The total sum of all orders for the given customer.
+    """
     calculate_sum_orders = [
         {"$match": {"customer": name}},
         {"$group": {"_id": 1, "total": {"$sum": "$total"}}},
