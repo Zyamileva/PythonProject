@@ -19,7 +19,7 @@ session.execute("""
 """)
 
 
-def add_event(event_id:str, user_id:str, event_type:str, metadata:str)->None:
+def add_event(event_id: str, user_id: str, event_type: str, metadata: str) -> None:
     """Add an event to the logs table.
 
     This function inserts a new event record into the Cassandra "logs" table with the provided event details and a UTC timestamp.
@@ -41,7 +41,7 @@ def add_event(event_id:str, user_id:str, event_type:str, metadata:str)->None:
     )
 
 
-def get_recent_events(event_type:str, user_id:str)->ResultSet:
+def get_recent_events(event_type: str, user_id: str) -> ResultSet:
     """Retrieve recent events of a specific type for a user.
 
     This function queries the Cassandra "logs" table for events matching the given type and user ID that occurred within the last 24 hours.
@@ -62,7 +62,9 @@ def get_recent_events(event_type:str, user_id:str)->ResultSet:
     )
 
 
-def update_event_metadata(event_type:str, user_id:str, event_id:str, timestamp:timezone, metadata:str)->None:
+def update_event_metadata(
+    event_type: str, user_id: str, event_id: str, timestamp: timezone, metadata: str
+) -> None:
     """Update the metadata of a specific event in the logs table.
 
     This function updates the metadata of an existing event in the Cassandra "logs" table based on the provided event type, user ID, event ID, and timestamp.
@@ -82,7 +84,7 @@ def update_event_metadata(event_type:str, user_id:str, event_id:str, timestamp:t
     )
 
 
-def delete_old_events(event_type:str)->None:
+def delete_old_events(event_type: str) -> None:
     """Delete events older than 7 days for a given event type.
 
     This function removes events from the Cassandra "logs" table that are older than a week for a specified event type.  It retrieves the events to be deleted and then deletes them individually to avoid performance issues with large IN queries.

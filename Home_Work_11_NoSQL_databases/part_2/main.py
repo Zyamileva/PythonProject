@@ -165,7 +165,7 @@ def calculate_items_sold_in_n_days(n: int) -> list:
     return result[0] if result and result[0] else 0
 
 
-def total_amount_by_customer(customer:str):
+def total_amount_by_customer(customer: str):
     """Calculate the total amount spent by a specific customer.
 
     This function calculates the sum of 'total_amount' for all orders associated with a given customer from the 'orders' table.
@@ -183,9 +183,7 @@ def total_amount_by_customer(customer:str):
     return result[0] if result and result[0] else 0
 
 
-cursor.execute(
-    "CREATE INDEX IF NOT EXISTS idx_products_category ON products(category)"
-)
+cursor.execute("CREATE INDEX IF NOT EXISTS idx_products_category ON products(category)")
 conn.commit()
 
 if __name__ == "__main__":

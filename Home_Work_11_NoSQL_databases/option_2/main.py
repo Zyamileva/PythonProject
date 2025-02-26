@@ -9,7 +9,7 @@ print("Connected to Redis...", client.ping())
 SESSION_TTL = 1800
 
 
-def create_session(user_id: str, session_token: str)->None:
+def create_session(user_id: str, session_token: str) -> None:
     """Create a new session for a user.
 
     This function stores session data in Redis, associating a session token and login time with a user ID.  The session is set to expire after a predefined TTL.
