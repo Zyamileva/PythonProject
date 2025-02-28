@@ -7,6 +7,7 @@ db = client["online_store"]
 collection_products = db["products"]
 collection_orders = db["orders"]
 
+
 products_list = [
     {"name": "кроссовки", "price": 1000, "category": "Adidas", "quantity": 1},
     {"name": "ботинки", "price": 1500, "category": "Nike", "quantity": 20},
@@ -14,6 +15,7 @@ products_list = [
     {"name": "куртка", "price": 3000, "category": "Zara", "quantity": 25},
     {"name": "штаны", "price": 500, "category": "H&M", "quantity": 40},
 ]
+
 
 orders_list = [
     {
@@ -38,11 +40,11 @@ orders_list = [
     },
 ]
 
+
 collection_products.insert_many(products_list)
 collection_orders.insert_many(orders_list)
 
 collection_products.update_one({"name": "кроссовки"}, {"$inc": {"quantity": -1}})
-
 collection_products.delete_many({"quantity": {"$eq": 0}})
 
 for product in collection_products.find():
