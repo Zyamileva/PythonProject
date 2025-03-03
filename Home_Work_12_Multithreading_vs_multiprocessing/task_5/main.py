@@ -1,7 +1,12 @@
 import concurrent.futures
+import logging
+
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 
-def search_in_file(filename, search_text):
+def search_in_file(filename: str, search_text: str) -> list:
     """Searches for a specific text within a file.
 
     Args:
@@ -26,7 +31,7 @@ def search_in_file(filename, search_text):
     return results
 
 
-def parallel_search(files, search_text, use_threads=True):
+def parallel_search(files: str, search_text: str, use_threads=True):
     """Performs a parallel search for a given text across multiple files.
 
     Args:
@@ -71,4 +76,4 @@ if __name__ == "__main__":
     results = parallel_search(files_to_search, search_query, use_threads=False)
 
     for filename, line_num, line in results:
-        print(f"Найдено в {filename}, ряд {line_num}: {line}")
+        logging.info(f"Найдено в {filename}, ряд {line_num}: {line}")

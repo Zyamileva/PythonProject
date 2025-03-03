@@ -1,6 +1,11 @@
 import http.server
+import logging
 import socketserver
 import threading
+
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 
 class MyRequestHandler(http.server.SimpleHTTPRequestHandler):
@@ -34,5 +39,7 @@ if __name__ == "__main__":
     HOST, PORT = "", 8080
 
     server = ThreadedHTTPServer((HOST, PORT), MyRequestHandler)
-    print(f"Serving on port {PORT}...")
+
+    logging.info(f"Serving on port {PORT}...")
+
     server.serve_forever()

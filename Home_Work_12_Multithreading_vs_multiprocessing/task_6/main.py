@@ -1,5 +1,11 @@
 import concurrent.futures
+import logging
 import random
+
+
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 
 class Organism:
@@ -32,7 +38,7 @@ class Organism:
         return None if self.energy <= 0 else self
 
 
-def simulate(organism):
+def simulate(organism: Organism):
     """Simulates a single life cycle of an organism.
 
     Args:
@@ -54,4 +60,4 @@ for generation in range(5):  # 5 поколений
     # Обновление популяции
     population = [org for org in results if org]
 
-    print(f"Поколение {generation + 1}: {len(population)} организмов")
+    logging.info(f"Поколение {generation + 1}: {len(population)} организмов")

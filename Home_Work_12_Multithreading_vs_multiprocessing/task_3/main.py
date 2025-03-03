@@ -1,8 +1,14 @@
+import logging
 import multiprocessing
-import numpy as np
+import random
 
 
-def sum_part(num):
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+
+def sum_part(num: list) -> int:
     """Calculates the sum of elements in an iterable.
 
     Args:
@@ -14,7 +20,7 @@ def sum_part(num):
     return sum(num)
 
 
-def parallel_sum(numbers, num_processes):
+def parallel_sum(numbers: list, num_processes: int) -> int:
     """Calculates the sum of a list of numbers in parallel.
 
     Args:
@@ -24,6 +30,8 @@ def parallel_sum(numbers, num_processes):
     Returns:
         The sum of all numbers in the input list.
     """
+    if num_processes < 1:
+        raise ValueError("Количество процессов должно быть >= 1")
 
     chunk_size = len(numbers) // num_processes
 
@@ -38,10 +46,9 @@ def parallel_sum(numbers, num_processes):
 
 
 if __name__ == "__main__":
-    list_int = np.random.randint(1, 100, size=1000000).tolist()
-
-    num_processes = multiprocessing.cpu_count()
+    list_int = [random.randint(1, 100) for _ in range(1_000_000)]
+    num_processes = min(multiprocessing.cpu_count(), len(list_int))
 
     total_sum = parallel_sum(list_int, num_processes)
 
-    print(f"Общая сумма: {total_sum}")
+    logging.info(f"Общая сумма: {total_sum}")

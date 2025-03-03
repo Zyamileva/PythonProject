@@ -1,9 +1,15 @@
+import logging
 import math
 import multiprocessing
 import concurrent.futures
 
 
-def partial_factorial(start, end):
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+
+def partial_factorial(start: int, end: int) -> int:
     """Calculates the factorial of a range of numbers.
 
     Args:
@@ -20,7 +26,7 @@ def partial_factorial(start, end):
     return result
 
 
-def wrapper_partial_factorial(range_tuple):
+def wrapper_partial_factorial(range_tuple: list):
     """Wrapper function for partial_factorial.
 
     Args:
@@ -47,6 +53,11 @@ def parallel_factorial(number, num_processes):
     if number in [0, 1]:
         return 1
 
+    num_processes = min(num_processes, number)
+
+    if number < num_processes:
+        num_processes = number
+
     step = number // num_processes
     ranges = [(i * step + 1, min((i + 1) * step, number)) for i in range(num_processes)]
     if ranges[-1][1] < number:
@@ -65,4 +76,4 @@ if __name__ == "__main__":
 
     result = parallel_factorial(n, num_processes)
 
-    print(f"Факториал числа {n}! вычислен. Результат равен: {result}")
+    logging.info(f"Факториал числа {n}! вычислен. Результат равен: {result}")

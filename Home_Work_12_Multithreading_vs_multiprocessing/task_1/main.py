@@ -1,6 +1,11 @@
 import os.path
 import threading
 import requests
+import logging
+
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 INPUT_IMG = "Input"
 
@@ -18,10 +23,19 @@ def download_file(url: str, filename: str) -> None:
         filename: The name of the file to save locally.
 
     Raises:
-        requests.exceptions.RequestException: If any error occurs during the download process.
+       requests.Timeout: If the request times out.
+       requests.HTTPError: If an HTTP error occurs during the download.
+       requests.RequestException: If any other error occurs during the download process.
     """
+
+    filename_dir = os.path.join(new_folder, filename)
+
+    if os.path.exists(filename_dir):
+        logging.info(f"Файл {filename} уже существует, загрузки не будет.")
+        return
+
     try:
-        response = requests.get(url, stream=True)
+        response = requests.get(url, stream=True, timeout=10)
         response.raise_for_status()
 
         filename_dir = os.path.join(new_folder, filename)
@@ -29,8 +43,15 @@ def download_file(url: str, filename: str) -> None:
             for chunk in response.iter_content(chunk_size=8192):
                 if chunk:
                     file.write(chunk)
-    except requests.exceptions.RequestException:
-        print(f"Error downloading file from {url}")
+
+        logging.info(f"Файл {filename} успішно завантажено.")
+
+    except requests.Timeout:
+        logging.error(f"Таймаут во время загрузки {url}")
+    except requests.HTTPError as err:
+        logging.error(f"HTTP ошибка {err.response.status_code} при загрузке {url}")
+    except requests.RequestException as err:
+        logging.error(f"Ошибка во время загрузки {url}: {err}")
 
 
 if __name__ == "__main__":
