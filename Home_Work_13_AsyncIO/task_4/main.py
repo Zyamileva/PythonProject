@@ -28,20 +28,16 @@ async def slow_task():
 
 
 async def main():
-    """Run the main program.
-
-    This coroutine executes the slow_task with a timeout of 5 seconds.  If the task does not complete within the timeout period, a TimeoutError is raised.
-
-    Args:
-        None
+    """Run a slow task with a timeout.
 
     Returns:
         None
     """
-
+    task = asyncio.create_task(slow_task())
     try:
-        await asyncio.wait_for(slow_task(), timeout=5)
+        await asyncio.wait_for(task, timeout=5)
     except asyncio.TimeoutError:
+        task.cancel()
         logging.info("Время ожидания вышло.")
 
 

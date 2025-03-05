@@ -1,49 +1,58 @@
 import asyncio
 import logging
 
+
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
+logging.basicConfig(
+    level=logging.ERROR, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+QUEUE_MAX_SIZE = 10
 
 
 async def producer(queue):
-    """Produce data and add it to a queue.
-
-    This coroutine generates a sequence of numbers (0-4) with a 1-second delay between each, and adds them to the provided queue.  It simulates a data producer in a producer-consumer pattern.
+    """Produce tasks and add them to a queue.
 
     Args:
-        queue: The asyncio.Queue instance to add data to.
+        queue: The asyncio queue to add tasks to.
 
     Returns:
         None
     """
 
-    for i in range(5):
-        await asyncio.sleep(1)
-        await queue.put(i)
-        logging.info(f"task added: {i}")
+    try:
+        for i in range(5):
+            await asyncio.sleep(1)
+            await queue.put(i)
+            logging.info(f"task added: {i}")
+    except asyncio.CancelledError as e:
+        logging.error(f"An error occurred in the producer: {e}")
 
 
 async def consumer(queue, consumer_id: int) -> None:
-    """Consume data from a queue.
-
-    This coroutine retrieves tasks from the given queue and processes them, simulating a consumer in a producer-consumer pattern.  It continues until it receives a None value, indicating the end of the data stream.
+    """Consume tasks from a queue.
 
     Args:
-        queue: The asyncio.Queue instance to consume data from.
-        consumer_id (int): An identifier for the consumer.
+        queue: The asyncio queue to consume tasks from.
+        consumer_id: An identifier for the consumer.
 
     Returns:
         None
     """
 
-    while True:
-        task = await queue.get()
-        if task is None:
-            break
-        await asyncio.sleep(2)
-        logging.info(f"Еhe task was taken away {task}. Consumer {consumer_id}")
-        queue.task_done()
+    try:
+        while True:
+            task = await queue.get()
+            if task is None:
+                break
+            logging.info(f"Task {task} taken by Consumer {consumer_id}")
+            await asyncio.sleep(2)
+            queue.task_done()
+    except asyncio.CancelledError:
+        logging.error(f"Consumer {consumer_id} was canceled.")
+    finally:
+        logging.info(f"Consumer {consumer_id} finished.")
 
 
 async def main():
@@ -59,7 +68,7 @@ async def main():
     """
 
     n = 2
-    queue = asyncio.Queue()
+    queue = asyncio.Queue(maxsize=QUEUE_MAX_SIZE)
 
     producers = [asyncio.create_task(producer(queue))]
     consumers = [asyncio.create_task(consumer(queue, i)) for i in range(n)]
@@ -70,6 +79,7 @@ async def main():
         await queue.put(None)
 
     await asyncio.gather(*consumers)
+    logging.info("All tasks completed.")
 
 
 asyncio.run(main())

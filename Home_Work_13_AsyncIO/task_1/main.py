@@ -1,28 +1,46 @@
 import asyncio
 import logging
-import random
-
+import aiohttp
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
+logging.basicConfig(
+    level=logging.WARNING, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+semaphore = asyncio.Semaphore(3)
+
 
 async def download_page(url: str) -> None:
-    """Simulate downloading a web page.
-
-    This coroutine simulates the process of downloading a web page by pausing for a random amount of time (between 1 and 5 seconds). It then logs a message indicating the completion of the download.
+    """Download a web page asynchronously.
 
     Args:
-        url (str): The URL of the page being downloaded (used only for logging).
+        url: The URL of the page to download.
 
     Returns:
         None
+
+    Raises:
+        aiohttp.ClientError: If there is a network error during the download.
+        asyncio.TimeoutError: If the download times out.
     """
 
-    time_load = random.randint(1, 5)
-    await asyncio.sleep(time_load)
-    logging.info(f"Страница {url} загружена за {time_load} секунд")
+    async with semaphore:
+        timeout = aiohttp.ClientTimeout(total=10)
+        try:
+            async with aiohttp.ClientSession(timeout=timeout) as session:
+                async with session.get(url) as response:
+                    if response.status == 200:
+                        await response.text()
+                        logging.info(f"Страница {url} загружена.")
+                    else:
+                        logging.warning(f"Ошибка {response.status} при загрузке {url}")
+        except asyncio.TimeoutError:
+            logging.error(f"Тайм-аут при загрузке {url}")
+        except aiohttp.ClientError as e:
+            logging.error(f"Ошибка сети при загрузке {url}: {e}")
 
 
 async def main(urls: list) -> None:
@@ -36,15 +54,16 @@ async def main(urls: list) -> None:
     Returns:
         None
     """
-
-    tasks = [download_page(url) for url in urls]
-    await asyncio.gather(*tasks)
+    logging.info("Загрузка страниц...")
+    await asyncio.gather(*[download_page(url) for url in urls])
+    logging.info("Загрузка завершена.")
 
 
 url_list = [
-    "https://example.com/page1",
-    "https://example.com/page2",
-    "https://example.com/page3",
+    "https://ru.wikipedia.org/wiki/Хопкинс,_",
+    "https://ru.wikipedia.org/wiki/Хопкинс,_Энтони",
+    "https://ru.wikipedia.org/wiki/Молчание_ягнят_(роман)",
+    "https://ru.wikipedia.org/wiki/Актёрское_искусство",
 ]
 
 

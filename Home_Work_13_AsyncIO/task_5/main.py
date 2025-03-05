@@ -1,12 +1,13 @@
 import asyncio
 import logging
-
 from aiohttp import web
 
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
+
+semaphore = asyncio.Semaphore(5)
 
 
 async def home_route(request):
