@@ -10,10 +10,10 @@ import csv
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36"
 }
-DAYS_FILTER = 3
+DAYS_FILTER = 7
 
 
-def get_page(url):
+def get_page(url: str) -> None | BeautifulSoup:
     """Retrieve and parse a web page.
 
     Args:
@@ -33,7 +33,7 @@ def get_page(url):
         return None
 
 
-def parse_news(soup):
+def parse_news(soup: BeautifulSoup) -> []:
     """Parse news articles from a BeautifulSoup object.
 
     Args:
@@ -68,7 +68,7 @@ def parse_news(soup):
     return news_list
 
 
-def save_to_csv(data, filename="news.csv"):
+def save_to_csv(data: [], filename="news.csv"):
     """Save data to a CSV file.
 
     Args:
@@ -89,7 +89,7 @@ def save_to_csv(data, filename="news.csv"):
         writer.writerows(data)
 
 
-def show_statistics(data):
+def show_statistics(data: []):
     """Display publication statistics.
 
     Args:
@@ -114,8 +114,6 @@ def main():
         soup = get_page(url_page)
         if new_news := parse_news(soup):
             news += new_news
-        # print("Новин у news.csv")
-        # print(num)
         else:
             break
         num += 1
