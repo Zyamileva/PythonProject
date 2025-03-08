@@ -29,7 +29,6 @@ def get_page(url: str) -> None | BeautifulSoup:
 
     try:
         response = requests.get(url, headers=HEADERS)
-        time.sleep(2)
         response.raise_for_status()
         return BeautifulSoup(response.text, "html.parser")
     except requests.RequestException as e:
